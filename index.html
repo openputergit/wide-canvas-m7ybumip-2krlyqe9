@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Agency Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #ed1c24;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Login Section -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="https://firebasestorage.googleapis.com/v0/b/widecanvas-d0dd4.appspot.com/o/logos%2FFULL%20LOGO%20TRANSPARENT-01.png?alt=media&token=3607af49-98f0-4088-9c2d-0b807c68c8c0" 
+                     alt="Logo" 
+                     class="mx-auto h-16 mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Gas Agency Management System</h2>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded-lg">
+                <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded-lg">
+                <select id="userType" class="w-full p-3 border rounded-lg">
+                    <option value="owner">Owner</option>
+                    <option value="employee">Employee</option>
+                </select>
+                <button onclick="login()" class="w-full bg-[#ed1c24] text-white p-3 rounded-lg hover:bg-red-700">
+                    Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Owner Dashboard -->
+    <div id="ownerDashboard" class="hidden min-h-screen">
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/widecanvas-d0dd4.appspot.com/o/logos%2FFULL%20LOGO%20TRANSPARENT-01.png?alt=media&token=3607af49-98f0-4088-9c2d-0b807c68c8c0" 
+                         alt="Logo" 
+                         class="h-10">
+                    <div class="flex space-x-4">
+                        <button onclick="showSection('analytics')" class="text-gray-600 hover:text-[#ed1c24]">Analytics</button>
+                        <button onclick="showSection('customers')" class="text-gray-600 hover:text-[#ed1c24]">Customers</button>
+                        <button onclick="showSection('employees')" class="text-gray-600 hover:text-[#ed1c24]">Employees</button>
+                        <button onclick="showSection('inventory')" class="text-gray-600 hover:text-[#ed1c24]">Inventory</button>
+                        <button onclick="logout()" class="text-[#ed1c24]">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Analytics Section -->
+            <div id="analytics" class="hidden">
+                <h2 class="text-2xl font-bold mb-6">Analytics Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-2">Total Orders</h3>
+                        <p class="text-3xl font-bold text-[#ed1c24]">1,234</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-2">Active Customers</h3>
+                        <p class="text-3xl font-bold text-[#ed1c24]">856</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-2">Monthly Revenue</h3>
+                        <p class="text-3xl font-bold text-[#ed1c24]">₹85,400</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold mb-2">Pending Deliveries</h3>
+                        <p class="text-3xl font-bold text-[#ed1c24]">23</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Section -->
+            <div id="customers" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Customer Management</h2>
+                    <button onclick="showAddCustomerModal()" class="bg-[#ed1c24] text-white px-4 py-2 rounded-lg">
+                        Add Customer
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Address</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody" class="divide-y divide-gray-200">
+                            <!-- Customer rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Employees Section -->
+            <div id="employees" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Employee Management</h2>
+                    <button onclick="showAddEmployeeModal()" class="bg-[#ed1c24] text-white px-4 py-2 rounded-lg">
+                        Add Employee
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody" class="divide-y divide-gray-200">
+                            <!-- Employee rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Inventory Section -->
+            <div id="inventory" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Inventory Management</h2>
+                    <button onclick="showAddInventoryModal()" class="bg-[#ed1c24] text-white px-4 py-2 rounded-lg">
+                        Add Stock
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody" class="divide-y divide-gray-200">
+                            <!-- Inventory rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Dashboard -->
+    <div id="employeeDashboard" class="hidden min-h-screen">
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/widecanvas-d0dd4.appspot.com/o/logos%2FFULL%20LOGO%20TRANSPARENT-01.png?alt=media&token=3607af49-98f0-4088-9c2d-0b807c68c8c0" 
+                         alt="Logo" 
+                         class="h-10">
+                    <div class="flex space-x-4">
+                        <button onclick="showEmployeeSection('orders')" class="text-gray-600 hover:text-[#ed1c24]">Orders</button>
+                        <button onclick="showEmployeeSection('deliveries')" class="text-gray-600 hover:text-[#ed1c24]">Deliveries</button>
+                        <button onclick="logout()" class="text-[#ed1c24]">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Orders Section -->
+            <div id="orders" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Order Management</h2>
+                    <button onclick="showAddOrderModal()" class="bg-[#ed1c24] text-white px-4 py-2 rounded-lg">
+                        New Order
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderTableBody" class="divide-y divide-gray-200">
+                            <!-- Order rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Deliveries Section -->
+            <div id="deliveries" class="hidden">
+                <h2 class="text-2xl font-bold mb-6">Delivery Management</h2>
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Address</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deliveryTableBody" class="divide-y divide-gray-200">
+                            <!-- Delivery rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Template -->
+    <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div id="modalContent">
+                <!-- Modal content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MongoDB Collection names
+        const COLLECTIONS = {
+            USERS: 'users',
+            CUSTOMERS: 'customers',
+            EMPLOYEES: 'employees',
+            INVENTORY: 'inventory',
+            ORDERS: 'orders'
+        };
+
+        const APP_SLUG = 'gas-agency-123456';
+
+        // API Helper Function
+        async function makeApiRequest(action, collection, data = null, conditions = null, id = null) {
+            const headers = {
+                'Authorization': 'Bearer mtWXDHrsWFfbEAxoaGSLfSjv91v1',
+                'Content-Type': 'application/json'
+            };
+
+            const body = {
+                appSlug: APP_SLUG,
+                action,
+                collection,
+                ...(data && { data }),
+                ...(conditions && { conditions }),
+                ...(id && { id })
+            };
+
+            try {
+                const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/mongodb', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(body)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Authentication
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const userType = document.getElementById('userType').value;
+
+            // Validate credentials against database
+            const response = await makeApiRequest('read', COLLECTIONS.USERS, null, {
+                username,
+                password,
+                userType
+            });
+
+            if (response.success && response.result.length > 0) {
+                document.getElementById('loginSection').classList.add('hidden');
+                if (userType === 'owner') {
+                    document.getElementById('ownerDashboard').classList.remove('hidden');
+                    showSection('analytics');
+                } else {
+                    document.getElementById('employeeDashboard').classList.remove('hidden');
+                    showEmployeeSection('orders');
+                }
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('ownerDashboard').classList.add('hidden');
+            document.getElementById('employeeDashboard').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Owner Dashboard Functions
+        function showSection(sectionName) {
+            ['analytics', 'customers', 'employees', 'inventory'].forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+            document.getElementById(sectionName).classList.remove('hidden');
+            loadSectionData(sectionName);
+        }
+
+        // Employee Dashboard Functions
+        function showEmployeeSection(sectionName) {
+            ['orders', 'deliveries'].forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+            document.getElementById(sectionName).classList.remove('hidden');
+            loadEmployeeSectionData(sectionName);
+        }
+
+        // Modal Functions
+        function showModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function hideModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // Data Loading Functions
+        async function loadSectionData(section) {
+            switch(section) {
+                case 'customers':
+                    const customers = await makeApiRequest('read', COLLECTIONS.CUSTOMERS);
+                    if (customers.success) {
+                        const tbody = document.getElementById('customerTableBody');
+                        tbody.innerHTML = customers.result.map(customer => `
+                            <tr>
+                                <td class="px-6 py-4">${customer.name}</td>
+                                <td class="px-6 py-4">${customer.phone}</td>
+                                <td class="px-6 py-4">${customer.address}</td>
+                                <td class="px-6 py-4">
+                                    <button onclick="editCustomer('${customer._id}')" class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                    <button onclick="deleteCustomer('${customer._id}')" class="text-red-600 hover:text-red-800">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                    break;
+                // Add similar implementations for other sections
+            }
+        }
+
+        async function loadEmployeeSectionData(section) {
+            switch(section) {
+                case 'orders':
+                    const orders = await makeApiRequest('read', COLLECTIONS.ORDERS);
+                    if (orders.success) {
+                        const tbody = document.getElementById('orderTableBody');
+                        tbody.innerHTML = orders.result.map(order => `
+                            <tr>
+                                <td class="px-6 py-4">${order.customerName}</td>
+                                <td class="px-6 py-4">${order.items.join(', ')}</td>
+                                <td class="px-6 py-4">${order.status}</td>
+                                <td class="px-6 py-4">
+                                    <button onclick="updateOrderStatus('${order._id}')" class="text-blue-600 hover:text-blue-800">Update Status</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                    break;
+                // Add implementation for deliveries section
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            // Any initial setup code goes here
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
